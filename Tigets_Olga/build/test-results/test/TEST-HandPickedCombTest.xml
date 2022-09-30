@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="HandPickedCombTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2022-09-30T17:16:37" hostname="ARTEMKA" time="18.612">
+  <properties/>
+  <testcase name="newFutureTest" classname="HandPickedCombTest" time="18.612"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
