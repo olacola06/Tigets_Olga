@@ -4,6 +4,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
@@ -18,32 +19,59 @@ public class HandPickedCombTest {
         wd.manage().window().maximize();
         wd.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         wd.navigate().to("https://www.tiqets.com/en/new-york-attractions-c260932/?show=attractions");
+        click(By.xpath("//button[.='Accept All']"));
 
-        click(By.xpath("//a[normalize-space()='Statue of Liberty + Empire State Building']"));
+        click(By.xpath("(//div[contains(@class,'BundleCardsSlider__slide flex-box')])[1]/article[1]"));
         click(By.xpath("//div[@class='px16 py16']/a[normalize-space()='Book now']"));
         pause(2000);
-        hideContainer("document.querySelector('#onetrust-group-container').style.display='none'");
         selectADay("15/12/2022");
         pause(2000);
-        chooseTimeSlot("12:00");
-        selectTickets();
-
+        chooseTimeSlotFirst("12:00");
+        selectTicketsFirst();
+        click(By.xpath("//button[.='Go to the next step']"));
+        selectADay("16/12/2022");
+        pause(2000);
+        chooseTimeSlotSecond("11:00");
+        selectTicketsSecond();
+        click(By.xpath("//button[.='Go to the next step']"));
+        type(By.cssSelector("input[name='customerFirstName']"),"Olga");
+        type(By.cssSelector("input[name='customerLastName']"),"Mar");
+        type(By.cssSelector("input[name='customerEmail']"),"ola@gmail.com");
+        type(By.cssSelector("input[name='phone-number']"),"523445699");
+        click(By.xpath("//button[.='Confirm your booking']"));
+        pause(5000);
+        Assert.assertTrue(assertDone());
     }
 
-    private void selectTickets() {
-        wd.findElement((By.cssSelector("button[class='py12 px16 w100 flex-box borders-solid-1 opacity-100 border-grey500 mt16 mb16" +
-                " reset-button text-bold text-ink500 outline@focus round-corners-4 reset-button']"))).click();
+    private boolean assertDone() {
+        String message = wd.findElement(By.xpath("(//div[@class='CheckoutCommon__grid-mobile'])[2]")).getText();
+        return message.contains("Select a payment method");
+    }
+
+    private void selectTicketsFirst() {
+        wd.findElement(By.xpath("(//button[@type='button'])[8]")).click();
         wd.findElement(By.xpath("(//button[@type='button'])[15]")).click();
-
+        click(By.xpath("//button[.='Save and continue']"));
+    }
+    private void selectTicketsSecond() {
+        wd.findElement(By.xpath("(//button[@type='button'])[11]")).click();
+        wd.findElement(By.xpath("(//button[@type='button'])[15]")).click();
+        click(By.xpath("//button[.='Save and continue']"));
     }
 
-    private void chooseTimeSlot(String time) {
+    private void chooseTimeSlotFirst(String time) {
         WebElement el = wd.findElement(By.cssSelector("div[class='TimeslotSelect relative mt16'] "));
         el.click();
-        String locator = String.format("option[value='%s']",time);
+        String locator = String.format("//option[.='%s']",time);
         pause(2000);
-        click(By.cssSelector(locator));
-        wd.navigate().refresh();
+        click(By.xpath(locator));
+   }
+    private void chooseTimeSlotSecond(String time) {
+        WebElement el = wd.findElement(By.cssSelector("div[class='TimeslotSelect relative mt16'] "));
+        el.click();
+        String locator = String.format("(//option[.='%s'])[2]",time);
+        pause(2000);
+        click(By.xpath(locator));
     }
 
     private void selectADay(String date) {
@@ -66,9 +94,10 @@ public class HandPickedCombTest {
     private void clickNextMonth(int diff) {
         for (; diff > 0; diff--) {
             click(By.xpath("//button[@aria-label='Next month']"));
-            // //button[@aria-label='Next month']//*[name()='svg']
+            pause(2000);
         }
     }
+
     private void pause(int millis){
         try {
             Thread.sleep(millis);
@@ -76,35 +105,14 @@ public class HandPickedCombTest {
             throw new RuntimeException(e);
         }
     }
-
-    private void hideContainer(String locator) {
-        JavascriptExecutor js = (JavascriptExecutor) wd;
-        js.executeScript(locator);
+    public void type(By locator, String message){
+        WebElement e =wd.findElement(locator);
+        e.click();
+        e.clear();
+        e.sendKeys(message);
     }
 
     private void click(By locator){
         wd.findElement(locator).click();
     }
-
-
 }
-
-//        String message = wd.findElement(By.cssSelector("div[class='lead-name']")).getText();
-//        Assert.assertTrue(message.contains("Post-Pay Per Lead"));
-//
-//        List<WebElement> list = wd.findElements(By.cssSelector("div[class='selected-categories-list'] div"));
-//        System.out.println(list.size());
-//        int sizeList = list.size();
-//
-//        if(sizeList!=2) {
-//                String locator = "div[class='suggested-categories-list'] div[class='category-item ']:nth-child("+1+") input";
-//                wd.findElement(By.cssSelector(locator)).click();
-//                pause(10000);
-//            list = wd.findElements(By.cssSelector("div[class='selected-categories-list'] div"));
-//            }
-//
-//        System.out.println(list.size());
-//        Assert.assertEquals(list.size(), 2);
-//
-//    }
-//}
